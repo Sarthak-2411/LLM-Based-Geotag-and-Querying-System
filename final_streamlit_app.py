@@ -10,8 +10,8 @@ import folium
 from google.genai import types
 load_dotenv()   
 # from google import genai
-GEMINI_API_KEY = os.getenv("GOOGLE_GEMINI_API_KEY")
-MODEL_ID = os.getenv("MODEL_ID")
+GEMINI_API_KEY = st.secrets["GOOGLE_GEMINI_API_KEY"] # os.getenv("GOOGLE_GEMINI_API_KEY")
+MODEL_ID = "models/gemini-1.5-flash-latest" # os.getenv("MODEL_ID")
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 prompt = """
