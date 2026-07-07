@@ -4,14 +4,15 @@ import os
 import json
 import re
 from google import genai
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from streamlit_folium import st_folium
 import folium
 from google.genai import types
-load_dotenv()   
+# load_dotenv()   
 # from google import genai
 GEMINI_API_KEY = st.secrets["GOOGLE_GEMINI_API_KEY"] # os.getenv("GOOGLE_GEMINI_API_KEY")
-MODEL_ID = "models/gemini-1.5-flash-latest" # os.getenv("MODEL_ID")
+# print(GEMINI_API_KEY)
+MODEL_ID = "gemma-4-31b-it"
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 prompt = """
@@ -43,8 +44,8 @@ def extract_location(text: str):
         text = re.sub(r"^```(?:json)?\s*", "", response.text)
         text = re.sub(r"\s*```$", "", text)
         return json.loads(text)[0]
-    except Exception:
-        print("Exception "+text)
+    except Exception as e:
+        print("GEOTAG API ERROR"+repr(e))
         return "[]"
     # try:
     #     r = GEM.generate_content(ask + "\n\n" + text,
@@ -206,7 +207,7 @@ with tabs[1]:
 from sentence_transformers import SentenceTransformer
 import faiss
 import pickle
-import torch
+# import torch
 from google.genai import types
 @st.cache_resource
 def load_model():
@@ -230,24 +231,24 @@ with tabs[2]:
     model = load_model()
     index, metadata, documents = load_data_and_index()
     def retrieve(query, k=5):
-        with torch.no_grad():
-            q_embed = model.encode(
-                [query],
-                convert_to_numpy=True,
-                normalize_embeddings=True
-            ).astype("float32")
-            D, I = index.search(q_embed, k=6)
+        # with torch.no_grad():
+        q_embed = model.encode(
+            [query],
+            convert_to_numpy=True,
+            normalize_embeddings=True
+        ).astype("float32")
+        D, I = index.search(q_embed, k=6)
 
-            retrieved_docs = set()
-            context = []
-            context = [metadata[i]["text"] for i in I[0]]
-            # for idx in I[0]:
-            #     retrieved_docs.add(metadata[idx]["doc_id"])
-            # for doc_id in retrieved_docs:
-            #     context.append(documents[doc_id])
-            return context
-            # print("\n\n".join(context))
-            # print(len(context))
+        retrieved_docs = set()
+        context = []
+        context = [metadata[i]["text"] for i in I[0]]
+        # for idx in I[0]:
+        #     retrieved_docs.add(metadata[idx]["doc_id"])
+        # for doc_id in retrieved_docs:
+        #     context.append(documents[doc_id])
+        return context
+        # print("\n\n".join(context))
+        # print(len(context))
     def generate_answer(query, context):
         ask = ("Extract every place-name (city, district, state, country, landmark, facility, "
            "river, etc.) mentioned in the text. Respond ONLY as a JSON list of strings.")
@@ -260,8 +261,8 @@ with tabs[2]:
         available on the CONTEXT, then just say that you do not have the data. The QUERY and the CONTEXT will be given by the user""")
             )
             return response.text
-        except Exception:
-            print("Some Error has occured")
+        except Exception as e:
+            print("CHAT API ERROR"+repr(e))
             return "Error Please try again!"   
 
 
