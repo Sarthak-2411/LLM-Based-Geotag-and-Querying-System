@@ -184,13 +184,14 @@ with tabs[1]:
 
         marker_cluster = MarkerCluster().add_to(fmap)
 
-        for _, row in st.session_state.DATAFRAME.dropna(subset=["lat","lon"]).iterrows():
+        for idx , row in st.session_state.DATAFRAME.dropna(subset=["lat","lon"]).iterrows():
             folium.Circle(
                     [row.lat, row.lon],
                     radius= 2000,#get_radius(r.disaster_type),
                     # color=get_colour(r.disaster_type),
                     fill=True, fill_opacity=0.4,
                     popup=folium.Popup(f"""
+                        <b>ID:</b> {idx}<br>
                         <b>Date:</b> {row.date}<br>
                         <b>Location:</b> {row.location}
                     """, max_width=250),
