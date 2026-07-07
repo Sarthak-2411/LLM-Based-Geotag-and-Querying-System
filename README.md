@@ -61,7 +61,7 @@ Create a file named:
 .streamlit/secrets.toml
 ```
 
-Add your Google API key in the following format:
+Add your Google API key from https://aistudio.google.com/api-keys in the following format:
 
 ```toml
 GOOGLE_API_KEY = "YOUR_GOOGLE_API_KEY"
