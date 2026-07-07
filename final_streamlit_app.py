@@ -90,12 +90,12 @@ if uploaded_file is not None and st.session_state.DATAFRAME is None:
     df.drop(columns=['time'], inplace=True)
     df.drop(columns=['link'], inplace=True)
 
-    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+    df['date'] = pd.to_datetime(df['date'],format='%m-%d-%y', errors='coerce').dt.date
 
-    N = 5
+    # N = 5
     # DATAFRAME = df.head(N)
     # DATAFRAME = df.sample(n=N, random_state=56)
-    st.session_state.DATAFRAME  = df.sample(n=N, random_state=56)
+    st.session_state.DATAFRAME  = df#df.sample(n=N, random_state=56)
    
     dmin, dmax = df['date'].min(), df['date'].max()
 
@@ -172,7 +172,8 @@ with tabs[1]:
     elif 'location' not in st.session_state.DATAFRAME.columns: # If text is not geotagged
         st.subheader("Please geotag the Dataset")
     else:        
-        fmap = folium.Map(zoom_start=4)
+        fmap = folium.Map(location=[20.5937, 78.9629], zoom_start=4)
+         
         geojson = folium.GeoJson("states_india.geojson", style_function=lambda feature: {
             "fillOpacity": 0,
             "color": "black",
@@ -186,11 +187,11 @@ with tabs[1]:
         for _, row in st.session_state.DATAFRAME.dropna(subset=["lat","lon"]).iterrows():
             folium.Circle(
                     [row.lat, row.lon],
-                    radius= 3000,#get_radius(r.disaster_type),
+                    radius= 2000,#get_radius(r.disaster_type),
                     # color=get_colour(r.disaster_type),
                     fill=True, fill_opacity=0.4,
                     popup=folium.Popup(f"""
-                        <b>Date:</b> {row.date.date()}<br>
+                        <b>Date:</b> {row.date}<br>
                         <b>Location:</b> {row.location}
                     """, max_width=250),
                 ).add_to(marker_cluster)
